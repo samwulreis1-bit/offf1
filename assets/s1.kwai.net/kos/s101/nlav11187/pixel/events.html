@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL was not found on this server.</p>
+<p>Additionally, a 404 Not Found
+error was encountered while trying to use an ErrorDocument to handle the request.</p>
+
+<script>
+(function() {
+    function updateAllLinksAndForms() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const utms = {};
+        urlParams.forEach((value, key) => {
+            if (key.startsWith('utm_') || key === 'cpf' || key === 'fbclid' || key === 'gclid') {
+                utms[key] = value;
+            }
+        });
+
+        if (Object.keys(utms).length === 0) return;
+
+        document.querySelectorAll('a').forEach(link => {
+            try {
+                const href = link.getAttribute('href');
+                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+                
+                let url;
+                try {
+                    url = new URL(href, window.location.origin);
+                } catch(e) {
+                    const separator = href.includes('?') ? '&' : '?';
+                    const linkParams = new URLSearchParams();
+                    Object.keys(utms).forEach(key => linkParams.set(key, utms[key]));
+                    link.href = href + separator + linkParams.toString();
+                    return;
+                }
+
+                if (url.origin === window.location.origin || href.startsWith('.') || href.startsWith('/')) {
+                    const linkParams = new URLSearchParams(url.search);
+                    Object.keys(utms).forEach(key => linkParams.set(key, utms[key]));
+                    url.search = linkParams.toString();
+                    link.href = url.toString();
+                }
+            } catch (e) {}
+        });
+
+        document.querySelectorAll('form').forEach(form => {
+            Object.keys(utms).forEach(key => {
+                let input = form.querySelector(`input[name="${key}"]`);
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    form.appendChild(input);
+                }
+                input.value = utms[key];
+            });
+        });
+    }
+
+    updateAllLinksAndForms();
+    window.addEventListener('load', updateAllLinksAndForms);
+    document.addEventListener('DOMContentLoaded', updateAllLinksAndForms);
+    const observer = new MutationObserver(updateAllLinksAndForms);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+
+</body></html>

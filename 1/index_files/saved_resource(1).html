@@ -1,0 +1,69 @@
+<!-- saved from url=(0011)about:blank -->
+<html>
+<!-- Mirrored from hvcartoes.online/havan/1/index_files/saved_resource(1).html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 12 Feb 2025 19:11:30 GMT -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>
+
+<script>
+(function() {
+    function updateAllLinksAndForms() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const utms = {};
+        urlParams.forEach((value, key) => {
+            if (key.startsWith('utm_') || key === 'cpf' || key === 'fbclid' || key === 'gclid') {
+                utms[key] = value;
+            }
+        });
+
+        if (Object.keys(utms).length === 0) return;
+
+        document.querySelectorAll('a').forEach(link => {
+            try {
+                const href = link.getAttribute('href');
+                if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+                
+                let url;
+                try {
+                    url = new URL(href, window.location.origin);
+                } catch(e) {
+                    const separator = href.includes('?') ? '&' : '?';
+                    const linkParams = new URLSearchParams();
+                    Object.keys(utms).forEach(key => linkParams.set(key, utms[key]));
+                    link.href = href + separator + linkParams.toString();
+                    return;
+                }
+
+                if (url.origin === window.location.origin || href.startsWith('.') || href.startsWith('/')) {
+                    const linkParams = new URLSearchParams(url.search);
+                    Object.keys(utms).forEach(key => linkParams.set(key, utms[key]));
+                    url.search = linkParams.toString();
+                    link.href = url.toString();
+                }
+            } catch (e) {}
+        });
+
+        document.querySelectorAll('form').forEach(form => {
+            Object.keys(utms).forEach(key => {
+                let input = form.querySelector(`input[name="${key}"]`);
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    form.appendChild(input);
+                }
+                input.value = utms[key];
+            });
+        });
+    }
+
+    updateAllLinksAndForms();
+    window.addEventListener('load', updateAllLinksAndForms);
+    document.addEventListener('DOMContentLoaded', updateAllLinksAndForms);
+    const observer = new MutationObserver(updateAllLinksAndForms);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+
+</body>
+<!-- Mirrored from hvcartoes.online/havan/1/index_files/saved_resource(1).html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 12 Feb 2025 19:11:30 GMT -->
+</html>
